@@ -1,0 +1,72 @@
+diff --git a/Checksum.cc b/Checksum.cc
+index 6d1fb29..84ed76e 100644
+--- a/Checksum.cc
++++ b/Checksum.cc
+@@ -11,6 +11,7 @@
+ #include <cassert>
+ #include <cstdio>
+ #include <stdexcept>
++#include <iostream>
+ 
+ // project
+ #include "Checksum.hh"
+@@ -30,7 +31,8 @@ Checksum::Checksum(checksumtypes type)
+     } break;
+     default:
+       // not allowed to have something that is not recognized.
+-      throw std::runtime_error("wrong checksum type - programming error");
++      std::cerr << "wrong checksum type - programming error\n";
++      std::exit(EXIT_FAILURE);
+   }
+ }
+ 
+diff --git a/UndoableUnlink.cc b/UndoableUnlink.cc
+index 66b95af..0fe918d 100644
+--- a/UndoableUnlink.cc
++++ b/UndoableUnlink.cc
+@@ -48,8 +48,9 @@ int
+ UndoableUnlink::undo()
+ {
+   if (m_state != state::MOVED_TO_TEMPORARY) {
+-    throw std::runtime_error(
+-      "api misuse - calling undo() now is a programming error");
++    std::cerr <<
++      "api misuse - calling undo() now is a programming error\n";
++    std::exit(EXIT_FAILURE);
+   }
+ 
+   if (0 != rename(m_tempfilename.c_str(), m_filename.c_str())) {
+@@ -68,8 +69,9 @@ int
+ UndoableUnlink::unlink()
+ {
+   if (m_state != state::MOVED_TO_TEMPORARY) {
+-    throw std::runtime_error(
+-      "api misuse - calling unlink() now is a programming error");
++    std::cerr <<
++      "api misuse - calling unlink() now is a programming error\n";
++    std::exit(EXIT_FAILURE);
+   }
+   if (0 != ::unlink(m_tempfilename.c_str())) {
+     std::cerr << "Failed unlinking temporary file made from " + m_filename +
+diff --git a/rdfind.cc b/rdfind.cc
+index 64dd8f6..8f71cba 100644
+--- a/rdfind.cc
++++ b/rdfind.cc
+@@ -146,13 +146,15 @@ parseOptions(Parser& parser)
+     } else if (parser.try_parse_string("-minsize")) {
+       const long long minsize = std::stoll(parser.get_parsed_string());
+       if (minsize < 0) {
+-        throw std::runtime_error("negative value of minsize not allowed");
++        std::cerr << "negative value of minsize not allowed\n";
++        std::exit(EXIT_FAILURE);
+       }
+       o.minimumfilesize = minsize;
+     } else if (parser.try_parse_string("-maxsize")) {
+       const long long maxsize = std::stoll(parser.get_parsed_string());
+       if (maxsize < 0) {
+-        throw std::runtime_error("negative value of maxsize not allowed");
++        std::cerr << "negative value of maxsize not allowed\n";
++        std::exit(EXIT_FAILURE);
+       }
+       o.maximumfilesize = maxsize;
+     } else if (parser.try_parse_bool("-deleteduplicates")) {
